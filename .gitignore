@@ -1,2 +1,10 @@
-/jobright_recs.json
-/jobright_state.json
+.venv/
+__pycache__/
+*.pyc
+
+jobright_state.json
+jobright_recs.json
+out/
+
+.env
+.DS_Store
