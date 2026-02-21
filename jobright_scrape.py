@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 import argparse
 import json
 import re
 from typing import Any
-from __future__ import annotations
 from urllib.parse import urlencode, urljoin, urlparse
 from playwright.sync_api import sync_playwright, TimeoutError as PWTimeoutError
 
