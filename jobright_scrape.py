@@ -1,11 +1,9 @@
-from __future__ import annotations
-
 import argparse
 import json
 import re
 from typing import Any
+from __future__ import annotations
 from urllib.parse import urlencode, urljoin, urlparse
-
 from playwright.sync_api import sync_playwright, TimeoutError as PWTimeoutError
 
 
@@ -16,17 +14,16 @@ RECS_API = f"{BASE}/swan/recommend/list/jobs"
 
 
 def save_login_state() -> None:
+
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)
         context = browser.new_context()
         page = context.new_page()
-
         page.set_default_navigation_timeout(120_000)
 
         page.goto(BASE, wait_until="domcontentloaded")
         input("Log in in the opened browser, then press ENTER here...")
 
-        # SPA pages may never hit "networkidle"
         try:
             page.goto(RECS_PAGE, wait_until="domcontentloaded", timeout=120_000)
         except PWTimeoutError:
@@ -37,8 +34,7 @@ def save_login_state() -> None:
 
         context.storage_state(path=STATE_FILE)
         browser.close()
-
-    print(f"[OK] Saved session to {STATE_FILE}")
+        print(f"[OK] Saved session to {STATE_FILE}")
 
 
 def _pick(d: dict, *keys: str) -> Any:
@@ -49,10 +45,6 @@ def _pick(d: dict, *keys: str) -> Any:
 
 
 def _extract_job_dicts(obj: Any) -> list[dict]:
-    """
-    Crawl the JSON and pull out dicts that look like real job postings.
-    Avoids recruiter/profile cards.
-    """
     PROFILE_KEYS = {"firstName", "fullName", "linkedinUrl"}
     ID_KEYS = {"jobInfoId", "jobId", "job_id", "jobID", "id"}
     TITLE_KEYS = {"jobTitle", "title", "positionTitle", "name"}
@@ -64,7 +56,6 @@ def _extract_job_dicts(obj: Any) -> list[dict]:
     def is_job(d: dict) -> bool:
         keys = set(d.keys())
 
-        # Reject profile-ish dicts
         if keys & PROFILE_KEYS:
             return False
 
@@ -73,10 +64,9 @@ def _extract_job_dicts(obj: Any) -> list[dict]:
         has_company = bool(keys & COMPANY_KEYS)
         has_apply = bool(keys & APPLY_KEYS)
 
-        # categories usually have a title but not apply url
         return has_id and has_title and (has_company or has_apply)
 
-    def walk(x: Any):
+    def walk(x: Any) -> None:
         if isinstance(x, dict):
             if is_job(x):
                 jobs.append(x)
@@ -90,7 +80,6 @@ def _extract_job_dicts(obj: Any) -> list[dict]:
     return jobs
 
 
-# --- Company fallback extraction (keeps your previous logic) ---
 _COMPANY_FROM_SUMMARY = re.compile(r"^([A-Z][A-Za-z0-9&.,'’\- ]{1,80})\s+is\s+", re.UNICODE)
 _COMPANY_FROM_LOGO = re.compile(r"/([A-Za-z0-9-]+)_logo", re.IGNORECASE)
 
@@ -98,8 +87,12 @@ _COMPANY_FROM_LOGO = re.compile(r"/([A-Za-z0-9-]+)_logo", re.IGNORECASE)
 def extract_company(job: dict) -> str | None:
     company = _pick(
         job,
-        "companyName", "company", "company_name",
-        "jdCompanyName", "companyDisplayName", "companyTitle",
+        "companyName",
+        "company",
+        "company_name",
+        "jdCompanyName",
+        "companyDisplayName",
+        "companyTitle",
     )
     if isinstance(company, dict):
         company = _pick(company, "name", "companyName")
@@ -136,11 +129,7 @@ def extract_company(job: dict) -> str | None:
     return None
 
 
-# --- New: recruiters + keywords extraction ---
 def extract_linkedin_recruiters(job: dict) -> list[dict]:
-    """
-    Pulls recruiter-ish people from socialConnections (if present).
-    """
     sc = job.get("socialConnections")
     if not isinstance(sc, list):
         return []
@@ -165,15 +154,12 @@ def extract_linkedin_recruiters(job: dict) -> list[dict]:
 
 def extract_keywords(job: dict, max_kw: int = 25) -> list[str]:
     kws: list[str] = []
-
-    # skills list (best signal)
     core = job.get("jdCoreSkills")
     if isinstance(core, list):
         for s in core:
             if isinstance(s, dict) and isinstance(s.get("skill"), str):
                 kws.append(s["skill"])
 
-    # matching scores
     sms = job.get("skillMatchingScores")
     if isinstance(sms, list):
         for s in sms:
@@ -182,7 +168,6 @@ def extract_keywords(job: dict, max_kw: int = 25) -> list[str]:
                 if isinstance(name, str):
                     kws.append(name)
 
-    # tags
     for k in ("recommendationTags", "jobTags"):
         v = job.get(k)
         if isinstance(v, list):
@@ -190,7 +175,6 @@ def extract_keywords(job: dict, max_kw: int = 25) -> list[str]:
                 if isinstance(x, str):
                     kws.append(x)
 
-    # taxonomy
     v3 = job.get("jobTaxonomyV3")
     if isinstance(v3, list):
         for x in v3:
@@ -201,7 +185,6 @@ def extract_keywords(job: dict, max_kw: int = 25) -> list[str]:
     if isinstance(ft, str):
         kws.append(ft)
 
-    # dedupe
     seen = set()
     out: list[str] = []
     for x in kws:
@@ -229,7 +212,6 @@ def fetch_recommendations_via_api(max_items: int, sort_condition: int = 0, page_
         browser = p.chromium.launch(headless=True)
         context = browser.new_context(storage_state=STATE_FILE)
 
-        # Warm session
         page = context.new_page()
         try:
             page.goto(RECS_PAGE, wait_until="domcontentloaded", timeout=60_000)
@@ -261,7 +243,6 @@ def fetch_recommendations_via_api(max_items: int, sort_condition: int = 0, page_
                 },
             )
 
-            # retry once if blocked
             if resp.status in (401, 403):
                 try:
                     page.goto(RECS_PAGE, wait_until="domcontentloaded", timeout=60_000)
@@ -298,7 +279,6 @@ def fetch_recommendations_via_api(max_items: int, sort_condition: int = 0, page_
             for j in job_dicts:
                 job_id = _pick(j, "jobInfoId", "jobId", "id", "job_id", "jobID")
                 job_id_str = str(job_id) if job_id is not None else None
-
                 if job_id_str and job_id_str in seen_ids:
                     continue
 
@@ -342,10 +322,8 @@ def fetch_recommendations_via_api(max_items: int, sort_condition: int = 0, page_
                         "raw": j,
                     }
                 )
-
                 if job_id_str:
                     seen_ids.add(job_id_str)
-
                 added += 1
                 if len(out) >= max_items:
                     break
@@ -356,14 +334,13 @@ def fetch_recommendations_via_api(max_items: int, sort_condition: int = 0, page_
             position += count
             refresh = "false"
 
-        # persist rotated cookies/tokens
         context.storage_state(path=STATE_FILE)
         browser.close()
 
     return out
 
 
-def main():
+def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--login", action="store_true", help="Open browser to log in and save session state")
     ap.add_argument("--max", type=int, default=50, help="Max jobs to fetch")
@@ -386,12 +363,12 @@ def main():
     for j in jobs[:20]:
         print(f"- {j.get('title') or ''} | {j.get('company') or ''} | {j.get('location') or ''}")
         print(f"  jobright: {j.get('jobright_url')}")
-        print(f"  apply:    {j.get('apply_url')}")
+        print(f"  apply: {j.get('apply_url')}")
         recs = j.get("linkedin_recruiters") or []
         if recs:
             print(f"  recruiters: {len(recs)}")
             for r in recs[:3]:
-                print(f"    - {r.get('fullName')} ({r.get('jobTitle')}) -> {r.get('linkedinUrl')}")
+                print(f"   - {r.get('fullName')} ({r.get('jobTitle')}) -> {r.get('linkedinUrl')}")
         kws = j.get("keywords") or []
         if kws:
             print("  keywords:", ", ".join(kws[:12]))
