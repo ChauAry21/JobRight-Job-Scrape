@@ -1,0 +1,68 @@
+:root {
+  --bg: #080c08;
+  --bg2: #0d130d;
+  --bg3: #111911;
+  --border: #1f2e1f;
+  --border-bright: #2d4a2d;
+  --green: #39ff14;
+  --green-dim: #1a7a08;
+  --green-glow: rgba(57, 255, 20, 0.08);
+  --green-glow-strong: rgba(57, 255, 20, 0.18);
+  --amber: #ffb300;
+  --text: #c8e6c9;
+  --text-dim: #5a7a5a;
+  --text-muted: #3a5a3a;
+  --font-mono: var(--font-mono), "Courier New", monospace;
+  --font-display: var(--font-display), sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(57, 255, 20, 0.012) 2px,
+      rgba(57, 255, 20, 0.012) 4px
+    );
+}
+
+::selection {
+  background: var(--green-dim);
+  color: var(--green);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg2);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-bright);
+  border-radius: 3px;
+}
+
+a {
+  color: var(--green);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

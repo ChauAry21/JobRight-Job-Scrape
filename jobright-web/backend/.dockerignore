@@ -1,0 +1,7 @@
+__pycache__
+*.pyc
+*.pyo
+.env
+.git
+jobright_recs.json
+jobright_debug_payload.json

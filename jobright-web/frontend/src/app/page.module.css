@@ -1,0 +1,376 @@
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+
+.header {
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 20px;
+}
+
+.headerTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.titleBlock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cursor {
+  color: var(--green);
+  font-size: 22px;
+  animation: blink 1.1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--green);
+  text-shadow: 0 0 18px rgba(57, 255, 20, 0.45);
+}
+
+.headerRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.tsLine {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+.tsValue {
+  color: var(--amber);
+}
+
+.refreshBtn {
+  background: transparent;
+  border: 1px solid var(--green-dim);
+  color: var(--green);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.refreshBtn:hover:not(:disabled) {
+  background: var(--green-glow);
+  border-color: var(--green);
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.25);
+}
+
+.refreshBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.statsBar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.stat::before {
+  content: "// ";
+  color: var(--text-muted);
+}
+
+.filterInput {
+  flex: 1;
+  min-width: 220px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 6px 10px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.filterInput::placeholder {
+  color: var(--text-muted);
+}
+
+.filterInput:focus {
+  border-color: var(--green-dim);
+}
+
+.errorBanner {
+  background: rgba(255, 50, 50, 0.06);
+  border: 1px solid rgba(255, 80, 80, 0.25);
+  color: #ff6060;
+  font-size: 12px;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  letter-spacing: 0.05em;
+}
+
+.errorPrefix {
+  color: #ff3030;
+  font-weight: bold;
+}
+
+.loadingBlock {
+  color: var(--text-dim);
+  font-size: 13px;
+  padding: 40px 0;
+  letter-spacing: 0.06em;
+}
+
+.loadingDot {
+  color: var(--green);
+  animation: blink 0.8s step-end infinite;
+}
+
+.empty {
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 40px 0;
+  letter-spacing: 0.05em;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 720px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 16px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  animation: fadeUp 0.35s ease both;
+}
+
+.card:hover {
+  border-color: var(--border-bright);
+  box-shadow: 0 0 16px var(--green-glow);
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cardHeader {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.cardIndex {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  padding-top: 2px;
+  width: 24px;
+}
+
+.cardMeta {
+  flex: 1;
+  min-width: 0;
+}
+
+.cardTitle {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardSub {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.company {
+  font-size: 12px;
+  color: var(--green);
+  letter-spacing: 0.03em;
+}
+
+.dot {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.location {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.cardActions {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.applyBtn {
+  display: block;
+  background: var(--green-glow-strong);
+  border: 1px solid var(--green-dim);
+  color: var(--green);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  padding: 4px 10px;
+  text-align: center;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.applyBtn:hover {
+  background: rgba(57, 255, 20, 0.25);
+  box-shadow: 0 0 8px rgba(57, 255, 20, 0.3);
+  text-decoration: none;
+}
+
+.viewBtn {
+  display: block;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  padding: 4px 10px;
+  text-align: center;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.viewBtn:hover {
+  border-color: var(--text-dim);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 12px;
+}
+
+.tag {
+  font-size: 10px;
+  color: var(--text-dim);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 2px 7px;
+  letter-spacing: 0.04em;
+}
+
+.tagMore {
+  font-size: 10px;
+  color: var(--text-muted);
+  padding: 2px 4px;
+}
+
+.recruitersRow {
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+.toggleBtn {
+  background: transparent;
+  border: none;
+  color: var(--amber);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  padding: 0;
+}
+
+.toggleBtn:hover {
+  color: var(--text);
+}
+
+.recruiters {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recruiter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.recruiterName {
+  font-size: 12px;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+.recruiterTitle {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.linkedinLink {
+  font-size: 10px;
+  color: var(--green-dim);
+  letter-spacing: 0.04em;
+  transition: color 0.1s;
+}
+
+.linkedinLink:hover {
+  color: var(--green);
+}
